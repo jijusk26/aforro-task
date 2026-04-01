@@ -10,6 +10,7 @@ import {
   fetchSimilarProducts,
   fetchTopSellingProducts,
 } from '../../services/products';
+import { Icons } from '../../assets/svg/icons';
 
 const ProductDetailPage = () => {
   const [product, setProduct] = useState<ProductBO>();
@@ -76,7 +77,7 @@ const ProductDetailPage = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header title={product?.title} secondaryIcon={Icons.share} />
       <ScrollView
         contentContainerStyle={{ gap: 16 }}
         style={{ flex: 1 }}
