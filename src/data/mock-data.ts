@@ -1,5 +1,5 @@
 import { LocalImages } from '../assets/images/images';
-import { ProductBO } from '../types/product';
+import { CouponBO, ProductBO } from '../types/product';
 
 export const Products: ProductBO[] = [
   {
@@ -11,6 +11,8 @@ export const Products: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.chocolate,
     images: [
       LocalImages.chocolate,
@@ -29,6 +31,8 @@ export const Products: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.chocolate,
     images: [
       LocalImages.chocolate,
@@ -47,6 +51,8 @@ export const Products: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.chocolate,
     images: [
       LocalImages.chocolate,
@@ -65,6 +71,8 @@ export const Products: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.chocolate,
     images: [
       LocalImages.chocolate,
@@ -86,6 +94,8 @@ export const SimilarProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.tataTea,
     images: [
       LocalImages.tataTea,
@@ -104,6 +114,8 @@ export const SimilarProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.tataTea,
     images: [
       LocalImages.tataTea,
@@ -122,6 +134,8 @@ export const SimilarProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.organicApple,
     images: [
       LocalImages.organicApple,
@@ -140,6 +154,8 @@ export const SimilarProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.organicApple,
     images: [
       LocalImages.organicApple,
@@ -161,6 +177,8 @@ export const TopSellingProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.chocolate,
     images: [
       LocalImages.chocolate,
@@ -179,6 +197,8 @@ export const TopSellingProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.chocolate,
     images: [
       LocalImages.chocolate,
@@ -197,6 +217,8 @@ export const TopSellingProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.organicApple,
     images: [
       LocalImages.organicApple,
@@ -215,6 +237,8 @@ export const TopSellingProducts: ProductBO[] = [
     offerPrice: 222,
     title: 'Dairy milk Silk Chocolate Bar Dairy milk Silk Chocolate BarText',
     weight: 64,
+    quantity: 3,
+    sizeGuage: 'gm',
     thumbnail: LocalImages.organicApple,
     images: [
       LocalImages.organicApple,
@@ -223,5 +247,29 @@ export const TopSellingProducts: ProductBO[] = [
       LocalImages.organicApple,
       LocalImages.organicApple,
     ],
+  },
+];
+
+export const couponData: CouponBO[] = [
+  {
+    id: 345,
+    amount: 250,
+    code: 'ASDFGH',
+    description: 'Add items worth ₹20 to avail this offer',
+    minAmount: 500,
+  },
+  {
+    id: 355,
+    amount: 120,
+    code: 'ASDDFH',
+    description: 'Upto ₹120 on orders above ₹1200',
+    minAmount: 1200,
+  },
+  {
+    id: 349,
+    amount: 120,
+    code: 'ASDJIH',
+    description: 'Upto ₹250 on orders above ₹2500',
+    minAmount: 200,
   },
 ];

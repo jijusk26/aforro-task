@@ -1,24 +1,45 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
 import { Colors } from '../constants/colors';
 import { width } from '../constants/appconstants';
 import { SvgXml } from 'react-native-svg';
 import { Icons } from '../assets/svg/icons';
 
-const Header = () => {
+interface HeaderProps {
+  title?: string;
+  secondaryIcon?: string;
+  onPressSecondary?: () => void;
+  onBackPressed?: () => void;
+}
+
+const Header = ({
+  onBackPressed,
+  onPressSecondary,
+  secondaryIcon,
+  title,
+}: HeaderProps) => {
   return (
     <View style={styles.container}>
-      <View style={styles.buttonContainer}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={onBackPressed}>
         <SvgXml xml={Icons.leftArrow} fontSize={20} />
-      </View>
+      </TouchableOpacity>
       <View style={styles.textContainer}>
         <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
-          Dairy milk silk chocolate
+          {title}
         </Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <SvgXml xml={Icons.share} fontSize={20} />
-      </View>
+      <TouchableOpacity
+        style={styles.buttonContainer}
+        onPress={onPressSecondary}
+      >
+        {secondaryIcon && <SvgXml xml={Icons.share} fontSize={20} />}
+      </TouchableOpacity>
     </View>
   );
 };
@@ -42,6 +63,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     fontSize: 14,

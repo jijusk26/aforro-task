@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { PageProps } from '../../types/product';
 
-const SplashScreen = () => {
+const SplashScreen = ({ navigation }: PageProps) => {
+  useEffect(() => {
+    setTimeout(() => {
+      navigation.navigate('Details', { id: 123 });
+    }, 1000);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Splash Screen</Text>

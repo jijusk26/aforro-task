@@ -1,5 +1,10 @@
 import { ImageSourcePropType } from 'react-native';
 
+export interface PageProps {
+  navigation: any;
+  route: any;
+}
+
 export interface ProductBO {
   id: number;
   brand: string;
@@ -10,4 +15,20 @@ export interface ProductBO {
   actualPrice: number;
   thumbnail?: ImageSourcePropType;
   images: ImageSourcePropType[];
+  quantity: number;
+  sizeGuage: 'gm' | 'kg' | 'lr';
+}
+
+export interface InstructionsBO {
+  id: number;
+  title: string;
+  icon: string;
+}
+
+export interface CouponBO {
+  id: number;
+  amount: number;
+  description: string;
+  code: string;
+  minAmount: number;
 }
