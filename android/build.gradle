@@ -10,6 +10,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url(project(":react-native-async-storage_async-storage").projectDir.toString() + "/local_repo")
+        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")

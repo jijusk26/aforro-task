@@ -1,11 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-    FlatList,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View
-} from 'react-native';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Icons } from '../../assets/svg/icons';
 import Button from '../../components/button';
@@ -14,15 +8,16 @@ import ProductCard from '../../components/products-card';
 import { width } from '../../constants/appconstants';
 import { Colors } from '../../constants/colors';
 import { fetchSimilarProducts } from '../../services/products';
-import { ProductBO } from '../../types/product';
+import { PageProps, ProductBO } from '../../types/product';
 import ApplyCoupon from './components/apply-coupon';
 import CancellationPolicy from './components/cancellation-policy';
 import CartItems from './components/cart-items';
 import { Arc } from './components/coupon-image';
 import DeliveryInstructions from './components/delivery-instructions';
 import PayableAmount from './components/payable-amout';
+import Checkout from './components/checkout';
 
-const CartScreen = () => {
+const CartScreen: FC<PageProps> = ({ navigation }) => {
   const [similarProducts, setSimilarProducts] = useState<ProductBO[]>([]);
 
   useEffect(() => {
@@ -124,24 +119,7 @@ const CartScreen = () => {
         <PayableAmount />
         <CancellationPolicy />
       </ScrollView>
-      <View
-        style={{
-          height: 69,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 16,
-        }}
-      >
-        <View style={{ flex: 1, gap: 3 }}>
-          <Text style={{ fontSize: 12, fontWeight: '500', color: '#C0C0C0' }}>
-            To Pay
-          </Text>
-          <Text style={{ fontSize: 16, fontWeight: '800', color: '#1B1C1E' }}>
-            ₹444
-          </Text>
-        </View>
-        <Button title={'Proceed'} style={{ width: 140 }}></Button>
-      </View>
+      <Checkout navigation={navigation} />
     </View>
   );
 };

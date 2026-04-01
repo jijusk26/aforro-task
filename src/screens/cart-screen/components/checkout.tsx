@@ -1,8 +1,52 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import Button from '../../../components/button';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import { width } from '../../../constants/appconstants';
+import { Colors } from '../../../constants/colors';
 
-const Checkout = () => {
+const Checkout = ({ navigation }: { navigation: any }) => {
+  const authenticated = useSelector(
+    (state: RootState) => state.user.isAuthenticated,
+  );
+
+  if (!authenticated) {
+    return (
+      <View
+        style={{
+          width: width,
+          paddingHorizontal: 16,
+          justifyContent: 'center',
+          elevation: 5,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          paddingTop: 10,
+          backgroundColor: Colors.background,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 16,
+            color: Colors.primaryText,
+            fontWeight: '600',
+            marginBottom: 5,
+          }}
+        >
+          Login to proceed
+        </Text>
+        <Text style={{ fontSize: 13, color: Colors.border, fontWeight: '600' }}>
+          Log in or sign up to proceed with your order
+        </Text>
+        <Button
+          title={'Login'}
+          onPress={() => navigation.navigate('Login')}
+          style={{ height: 40, width: width - 32, marginVertical: 14 }}
+        ></Button>
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
