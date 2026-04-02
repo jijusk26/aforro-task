@@ -16,6 +16,13 @@ import { OptionsBO, ProductBO } from '../types/product';
 import { width } from '../constants/appconstants';
 import OptionsList from './options-list';
 import useCart from '../hooks/cart';
+import Carousel, { Pagination } from 'react-native-reanimated-carousel';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+  Extrapolate,
+} from 'react-native-reanimated';
 
 const ProductCard = ({
   style,
@@ -29,6 +36,7 @@ const ProductCard = ({
   const [viewOptions, setViewOptions] = useState<boolean>(false);
   const [option, setOption] = useState<OptionsBO>(product.options?.[0]);
   const { addToCart } = useCart();
+  const progress = useSharedValue(0);
 
   useEffect(() => {
     setOption(product.options?.[0]);
@@ -44,7 +52,46 @@ const ProductCard = ({
         ]}
       >
         {!isSmall ? (
-          <View style={{ height: 250 }}></View>
+          <View
+            style={{
+              height: 250,
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+            }}
+          >
+            <Carousel
+              loop
+              width={width - 100}
+              height={200}
+              data={product.images}
+              pagingEnabled
+              autoPlay={false}
+              scrollAnimationDuration={800}
+              renderItem={({ item }) => (
+                <View style={styles.card}>
+                  <Image
+                    source={item}
+                    style={{ width: '100%', height: '100%' }}
+                    resizeMode="contain"
+                  />
+                </View>
+              )}
+              onProgressChange={(_, absoluteProgress) => {
+                progress.value = absoluteProgress;
+              }}
+            />
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                marginTop: 8,
+              }}
+            >
+              {product.images.map((_, index) => (
+                <Dot key={index} index={index} progress={progress} />
+              ))}
+            </View>
+          </View>
         ) : (
           <View style={{ height: 104, width: 104 }}>
             <Image
@@ -212,6 +259,50 @@ const ProductCard = ({
   );
 };
 
+const Dot = ({
+  index,
+  progress,
+}: {
+  index: number;
+  progress: SharedValue<number>;
+}) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const scale = interpolate(
+      progress.value,
+      [index - 1, index, index + 1],
+      [0.8, 1.4, 0.8],
+      Extrapolate.CLAMP,
+    );
+
+    const opacity = interpolate(
+      progress.value,
+      [index - 1, index, index + 1],
+      [0.4, 1, 0.4],
+      Extrapolate.CLAMP,
+    );
+
+    return {
+      transform: [{ scale }],
+      opacity,
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          backgroundColor: Colors.primary,
+          marginHorizontal: 4,
+        },
+        animatedStyle,
+      ]}
+    />
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.background,
@@ -249,6 +340,13 @@ const styles = StyleSheet.create({
   badgeText: {
     color: Colors.background,
     fontWeight: '600',
+  },
+  card: {
+    flex: 1,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
   },
 });
 

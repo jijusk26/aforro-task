@@ -16,6 +16,7 @@ interface HeaderProps {
   secondaryIcon?: string;
   onPressSecondary?: () => void;
   onBackPressed?: () => void;
+  navigation: any;
 }
 
 const Header = ({
@@ -23,11 +24,14 @@ const Header = ({
   onPressSecondary,
   secondaryIcon,
   title,
+  navigation,
 }: HeaderProps) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.buttonContainer} onPress={onBackPressed}>
-        <SvgXml xml={Icons.leftArrow} fontSize={20} />
+        {navigation.canGoBack() && (
+          <SvgXml xml={Icons.leftArrow} fontSize={20} />
+        )}
       </TouchableOpacity>
       <View style={styles.textContainer}>
         <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">

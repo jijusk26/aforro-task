@@ -40,17 +40,22 @@ const AddAddressScreen: FC<PageProps> = ({ navigation }) => {
     };
 
     dispatch(addAddress(data));
+    goBack();
+  };
 
+  const goBack = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
-    } else {
-      navigation.navigate('Details');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Header title="Add New Address" />
+      <Header
+        title="Add New Address"
+        navigation={navigation}
+        onBackPressed={goBack}
+      />
       <View style={{ flex: 1, padding: 16 }}>
         <TextInput
           placeholder="Full Address *"

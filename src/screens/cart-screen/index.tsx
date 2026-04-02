@@ -19,6 +19,7 @@ import { RootState } from '../../store/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { couponData } from '../../data/mock-data';
 import { updateSelectCoupon } from '../../store/reducers/user-slice';
+import FullPageLoader from '../../components/loader';
 
 const CartScreen: FC<PageProps> = ({ navigation }) => {
   const [similarProducts, setSimilarProducts] = useState<ProductBO[]>([]);
@@ -27,10 +28,13 @@ const CartScreen: FC<PageProps> = ({ navigation }) => {
   const selectedCoupon = useMemo(() => {
     return couponData.find(d => d.id === coupon);
   }, [coupon]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    setLoading(true);
     init();
     dispatch(updateSelectCoupon(undefined));
+    setLoading(false);
   }, []);
 
   const init = async () => {
@@ -63,75 +67,90 @@ const CartScreen: FC<PageProps> = ({ navigation }) => {
     return item.id.toString();
   }, []);
 
+  const goBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Header title="Review Cart" />
-      <ScrollView
-        contentContainerStyle={{ gap: 16, paddingTop: 16 }}
-        style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      >
-        <View style={[styles.descriptionContainer, styles.discountContainer]}>
-          <Text style={styles.primaryText}>
-            You are saving ₹
-            {selectedCoupon?.amount ? selectedCoupon?.amount - platformFee : 0}{' '}
-            with this order!
-          </Text>
-        </View>
-        <View style={[styles.descriptionContainer, styles.delayContainer]}>
-          <SvgXml xml={Icons.warning} fontSize={18} />
-          <Text style={{ fontSize: 12, color: '#717171', flex: 1 }}>
-            Your order might be delayed due to high demand Your order might be
-            delayed due to high demand
-          </Text>
-        </View>
-        <CartItems />
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.primaryText}>Did you forget?</Text>
-          <FlatList
-            data={similarProducts}
-            renderItem={renderSimilarItems}
-            horizontal
-            contentContainerStyle={{ gap: 12 }}
-            keyExtractor={keyExtractor}
-          />
-        </View>
-        <ApplyCoupon />
-        <View
-          style={[
-            styles.descriptionContainer,
-            { flexDirection: 'row', gap: 8 },
-          ]}
+    <>
+      <View style={styles.container}>
+        <Header
+          title="Review Cart"
+          navigation={navigation}
+          onBackPressed={goBack}
+        />
+        <ScrollView
+          contentContainerStyle={{ gap: 16, paddingTop: 16 }}
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         >
-          <Arc />
-          <View style={{ flex: 1, gap: 5, justifyContent: 'center' }}>
-            <Text
-              style={{
-                fontSize: 12,
-                color: Colors.primaryText,
-                fontWeight: '600',
-              }}
-            >
-              Add items worth ₹45 more to get 1% cashback
-            </Text>
-            <Text
-              style={{
-                fontSize: 12,
-                color: '#ACACAC',
-                fontWeight: '400',
-              }}
-            >
-              No coupon needed
+          <View style={[styles.descriptionContainer, styles.discountContainer]}>
+            <Text style={styles.primaryText}>
+              You are saving ₹
+              {selectedCoupon?.amount
+                ? selectedCoupon?.amount - platformFee
+                : 0}{' '}
+              with this order!
             </Text>
           </View>
-        </View>
-        <DeliveryInstructions />
-        <PayableAmount />
-        <CancellationPolicy />
-      </ScrollView>
-      <Checkout navigation={navigation} />
-    </View>
+          <View style={[styles.descriptionContainer, styles.delayContainer]}>
+            <SvgXml xml={Icons.warning} fontSize={18} />
+            <Text style={{ fontSize: 12, color: '#717171', flex: 1 }}>
+              Your order might be delayed due to high demand Your order might be
+              delayed due to high demand
+            </Text>
+          </View>
+          <CartItems />
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.primaryText}>Did you forget?</Text>
+            <FlatList
+              data={similarProducts}
+              renderItem={renderSimilarItems}
+              horizontal
+              contentContainerStyle={{ gap: 12 }}
+              keyExtractor={keyExtractor}
+            />
+          </View>
+          <ApplyCoupon />
+          <View
+            style={[
+              styles.descriptionContainer,
+              { flexDirection: 'row', gap: 8 },
+            ]}
+          >
+            <Arc />
+            <View style={{ flex: 1, gap: 5, justifyContent: 'center' }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: Colors.primaryText,
+                  fontWeight: '600',
+                }}
+              >
+                Add items worth ₹45 more to get 1% cashback
+              </Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: '#ACACAC',
+                  fontWeight: '400',
+                }}
+              >
+                No coupon needed
+              </Text>
+            </View>
+          </View>
+          <DeliveryInstructions />
+          <PayableAmount />
+          <CancellationPolicy />
+        </ScrollView>
+        <Checkout navigation={navigation} />
+      </View>
+      <FullPageLoader open={loading} />
+    </>
   );
 };
 

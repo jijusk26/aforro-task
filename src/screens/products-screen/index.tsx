@@ -13,12 +13,14 @@ import {
 import { Icons } from '../../assets/svg/icons';
 import Button from '../../components/button';
 import useCart from '../../hooks/cart';
+import FullPageLoader from '../../components/loader';
 
 const ProductDetailPage: FC<PageProps> = ({ navigation }) => {
   const [product, setProduct] = useState<ProductBO>();
   const [similiarProducts, setSimilarProducts] = useState<ProductBO[]>([]);
   const [topSellingProducts, setTopSellingProducts] = useState<ProductBO[]>([]);
   const { addToCart } = useCart();
+  const [loading, setloading] = useState<boolean>(false);
 
   useEffect(() => {
     init();
@@ -26,6 +28,7 @@ const ProductDetailPage: FC<PageProps> = ({ navigation }) => {
 
   const init = async () => {
     try {
+      setloading(true);
       const [currentProduct, similar, topSelling] = await Promise.all([
         getProduct(123),
         getSimilarProducts(),
@@ -35,6 +38,7 @@ const ProductDetailPage: FC<PageProps> = ({ navigation }) => {
       setProduct(currentProduct);
       setSimilarProducts(similar);
       setTopSellingProducts(topSelling);
+      setloading(false);
     } catch (error) {
       console.log('Init error:', error);
     }
@@ -90,67 +94,81 @@ const ProductDetailPage: FC<PageProps> = ({ navigation }) => {
     } catch (error) {}
   };
 
+  const goBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Header title={product?.title} secondaryIcon={Icons.share} />
-      <ScrollView
-        contentContainerStyle={{ gap: 16 }}
-        style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      >
-        <View style={{ marginHorizontal: 16, marginTop: 16 }}>
-          {product && <ProductCard product={product} />}
+    <>
+      <View style={styles.container}>
+        <Header
+          title={product?.title}
+          secondaryIcon={Icons.share}
+          navigation={navigation}
+          onBackPressed={goBack}
+        />
+        <ScrollView
+          contentContainerStyle={{ gap: 16 }}
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        >
+          <View style={{ marginHorizontal: 16, marginTop: 16 }}>
+            {product && <ProductCard product={product} />}
+          </View>
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.primaryText}>Similiar products</Text>
+            <FlatList
+              data={similiarProducts}
+              renderItem={renderSimilarItems}
+              horizontal
+              contentContainerStyle={{ gap: 12 }}
+              keyExtractor={keyExtractor}
+            />
+          </View>
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.primaryText}>Description</Text>
+            <Text style={styles.secondaryText}>{product?.description}</Text>
+          </View>
+          <View style={styles.descriptionContainer}>
+            <Text style={styles.primaryText}>Customers also bought</Text>
+            <FlatList
+              data={topSellingProducts}
+              renderItem={renderSimilarItems}
+              horizontal
+              contentContainerStyle={{ gap: 12 }}
+              keyExtractor={keyExtractor}
+            />
+          </View>
+        </ScrollView>
+        <View
+          style={{
+            height: 60,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            backgroundColor: Colors.background,
+          }}
+        >
+          <View style={{ flex: 1, gap: 3 }}>
+            <Text style={{ fontSize: 12, fontWeight: '500', color: '#C0C0C0' }}>
+              To Pay
+            </Text>
+            <Text style={{ fontSize: 16, fontWeight: '800', color: '#1B1C1E' }}>
+              ₹{product?.offerPrice}
+            </Text>
+          </View>
+          <Button
+            title={'Buy'}
+            style={{ width: 140 }}
+            onPress={onPressBuy}
+          ></Button>
         </View>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.primaryText}>Similiar products</Text>
-          <FlatList
-            data={similiarProducts}
-            renderItem={renderSimilarItems}
-            horizontal
-            contentContainerStyle={{ gap: 12 }}
-            keyExtractor={keyExtractor}
-          />
-        </View>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.primaryText}>Description</Text>
-          <Text style={styles.secondaryText}>{product?.description}</Text>
-        </View>
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.primaryText}>Customers also bought</Text>
-          <FlatList
-            data={topSellingProducts}
-            renderItem={renderSimilarItems}
-            horizontal
-            contentContainerStyle={{ gap: 12 }}
-            keyExtractor={keyExtractor}
-          />
-        </View>
-      </ScrollView>
-      <View
-        style={{
-          height: 60,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 16,
-          backgroundColor: Colors.background,
-        }}
-      >
-        <View style={{ flex: 1, gap: 3 }}>
-          <Text style={{ fontSize: 12, fontWeight: '500', color: '#C0C0C0' }}>
-            To Pay
-          </Text>
-          <Text style={{ fontSize: 16, fontWeight: '800', color: '#1B1C1E' }}>
-            ₹{product?.offerPrice}
-          </Text>
-        </View>
-        <Button
-          title={'Buy'}
-          style={{ width: 140 }}
-          onPress={onPressBuy}
-        ></Button>
       </View>
-    </View>
+      <FullPageLoader open={loading} />
+    </>
   );
 };
 
