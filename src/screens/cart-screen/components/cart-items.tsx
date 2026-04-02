@@ -1,56 +1,34 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Icons } from '../../../assets/svg/icons';
 import { Colors } from '../../../constants/colors';
 import { fetchSimilarProducts } from '../../../services/products';
-import { ProductBO } from '../../../types/product';
+import { OptionsBO, ProductBO } from '../../../types/product';
+import useCart, { CartBO } from '../../../hooks/cart';
 
 const CartItems = () => {
-  const [similarProducts, setSimilarProducts] = useState<ProductBO[]>([]);
+  const { cart } = useCart();
 
-  useEffect(() => {
-    init();
-  }, []);
-
-  const init = async () => {
-    try {
-      const [products] = await Promise.all([getSimilarProducts()]);
-
-      setSimilarProducts(products);
-    } catch (error) {
-      console.log('Init error:', error);
-    }
-  };
-
-  const getSimilarProducts = async () => {
-    try {
-      const response = await fetchSimilarProducts();
-      return response;
-    } catch (error) {
-      return [];
-    }
-  };
-
-  const renderSimilarItems = ({ item }: { item: ProductBO }) => (
-    <CartItemCard item={item} count={1} />
+  const renderSimilarItems = ({ item }: { item: CartBO }) => (
+    <CartItemCard item={item} count={item.count} optionId={item.optionId} />
   );
 
-  const keyExtractor = useCallback((item: ProductBO) => {
-    return item.id.toString();
+  const keyExtractor = useCallback((item: CartBO) => {
+    return item.id.toString() + item.optionId;
   }, []);
 
   return (
     <View style={styles.descriptionContainer}>
       <FlatList
-        data={similarProducts}
+        data={cart}
         renderItem={renderSimilarItems}
         contentContainerStyle={{ gap: 12 }}
         keyExtractor={keyExtractor}
@@ -59,13 +37,28 @@ const CartItems = () => {
   );
 };
 
-const CartItemCard = ({ item, count }: { item: ProductBO; count: number }) => {
+const CartItemCard = ({
+  item,
+  count,
+  optionId,
+}: {
+  item: CartBO;
+  count: number;
+  optionId: number;
+}) => {
+  const { addToCart } = useCart();
+  const option = useMemo(() => {
+    return (
+      item.item.options.find(o => o.id === optionId) ?? item.item.options?.[0]
+    );
+  }, [optionId]);
+
   return (
     <View style={styles.container}>
       <View style={styles.cardIconWrapper}>
         <View style={styles.icon}>
           <Image
-            source={item.thumbnail}
+            source={item.item.thumbnail}
             resizeMode="contain"
             style={{ height: '100%', width: '100%' }}
           />
@@ -73,48 +66,40 @@ const CartItemCard = ({ item, count }: { item: ProductBO; count: number }) => {
       </View>
       <View style={styles.infoWrapper}>
         <Text style={styles.descriptionText} numberOfLines={2}>
-          {item.title}
+          {item.item.title}
         </Text>
-        <Text style={styles.quantityText} numberOfLines={2}>
-          {item.quantity + ' x ' + item.weight + item.sizeGuage}
+        <Text style={styles.quantityText} numberOfLines={1}>
+          {item.count + ' x ' + option.quantity + option.sizeGuage}
         </Text>
       </View>
-      <View
-        style={{
-          borderColor: '#E7E7E7',
-          backgroundColor: Colors.background,
-          height: 56,
-          width: 80,
-          borderRadius: 6,
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 5,
-        }}
-      >
-        <View
-          style={{
-            height: 32,
-            borderRadius: 8,
-            borderColor: '#55913D',
-            borderWidth: 1,
-            width: 80,
-            flexDirection: 'row',
-          }}
-        >
+      <View style={styles.actionWrapper}>
+        <View style={styles.actionInner}>
           <TouchableOpacity
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+            onPress={() =>
+              addToCart(
+                { id: item.id, optionId: item.optionId, count: item.count },
+                false,
+              )
+            }
           >
             <SvgXml xml={Icons.minues} width={12} />
           </TouchableOpacity>
-          <TouchableOpacity
+          <View
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
             <Text style={{ fontSize: 12, fontWeight: '600', color: '#55913D' }}>
               {count}
             </Text>
-          </TouchableOpacity>
+          </View>
           <TouchableOpacity
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+            onPress={() =>
+              addToCart(
+                { id: item.id, optionId: item.optionId, count: item.count },
+                true,
+              )
+            }
           >
             <SvgXml xml={Icons.plsu} width={12} />
           </TouchableOpacity>
@@ -127,7 +112,7 @@ const CartItemCard = ({ item, count }: { item: ProductBO; count: number }) => {
               fontWeight: '600',
             }}
           >
-            ₹{item.offerPrice}
+            ₹{option.price}
           </Text>
           <Text
             style={{
@@ -137,7 +122,7 @@ const CartItemCard = ({ item, count }: { item: ProductBO; count: number }) => {
               textDecorationLine: 'line-through',
             }}
           >
-            ₹{item.actualPrice}
+            ₹{option.actualPrice}
           </Text>
         </View>
       </View>
@@ -189,6 +174,24 @@ const styles = StyleSheet.create({
     width: '90%',
     fontWeight: '400',
     fontSize: 11,
+  },
+  actionWrapper: {
+    borderColor: '#E7E7E7',
+    backgroundColor: Colors.background,
+    height: 56,
+    width: 80,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5,
+  },
+  actionInner: {
+    height: 32,
+    borderRadius: 8,
+    borderColor: '#55913D',
+    borderWidth: 1,
+    width: 80,
+    flexDirection: 'row',
   },
 });
 

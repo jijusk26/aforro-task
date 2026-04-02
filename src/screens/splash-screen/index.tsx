@@ -7,8 +7,14 @@ import {
   requestLocationPermission,
 } from '../../helpers/location';
 import { RESULTS } from 'react-native-permissions';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import { updateUserVisitApp } from '../../store/reducers/user-slice';
 
 const SplashScreen = ({ navigation }: PageProps) => {
+  const firstTime = useSelector((st: RootState) => st.user.isFirstTime);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     setTimeout(() => {
       init();
@@ -18,7 +24,7 @@ const SplashScreen = ({ navigation }: PageProps) => {
 
   const init = async () => {
     const result = await localEnabled();
-    if (result !== RESULTS.GRANTED) {
+    if (result !== RESULTS.GRANTED && firstTime) {
       Alert.alert(
         'Enable Location',
         'We use your location to show nearby results',
@@ -28,6 +34,7 @@ const SplashScreen = ({ navigation }: PageProps) => {
         ],
       );
     }
+    dispatch(updateUserVisitApp(false));
   };
 
   return (

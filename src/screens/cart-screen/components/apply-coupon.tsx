@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { LocalImages } from '../../../assets/images/images';
@@ -7,19 +7,28 @@ import CouponCard from '../../../components/coupon';
 import { Colors } from '../../../constants/colors';
 import { couponData } from '../../../data/mock-data';
 import { CouponBO } from '../../../types/product';
+import useCart from '../../../hooks/cart';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import { updateSelectCoupon } from '../../../store/reducers/user-slice';
 
 const ApplyCoupon = () => {
-  const [selectedCoupon, setSelectedCoupon] = useState<number>();
+  const { total } = useCart();
+  const coupon = useSelector((st: RootState) => st.user.isSelectedCoupon);
+  const dispatch = useDispatch();
 
   const renderCouponItem = ({ item }: { item: CouponBO }) => (
     <CouponCard
-      isSelected={selectedCoupon === item.id}
+      isSelected={coupon === item.id}
       item={item}
       key={item.id}
-      onPress={() => setSelectedCoupon(item.id)}
+      onPress={() =>
+        dispatch(updateSelectCoupon(item.id === coupon ? undefined : item.id))
+      }
+      enable={item.minAmount < total}
     />
   );
-  
+
   const keyExtractor = useCallback((item: CouponBO) => {
     return item.id.toString();
   }, []);

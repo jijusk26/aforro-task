@@ -1,11 +1,10 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Icons } from '../../assets/svg/icons';
-import Button from '../../components/button';
 import Header from '../../components/header';
 import ProductCard from '../../components/products-card';
-import { width } from '../../constants/appconstants';
+import { platformFee, width } from '../../constants/appconstants';
 import { Colors } from '../../constants/colors';
 import { fetchSimilarProducts } from '../../services/products';
 import { PageProps, ProductBO } from '../../types/product';
@@ -16,12 +15,22 @@ import { Arc } from './components/coupon-image';
 import DeliveryInstructions from './components/delivery-instructions';
 import PayableAmount from './components/payable-amout';
 import Checkout from './components/checkout';
+import { RootState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { couponData } from '../../data/mock-data';
+import { updateSelectCoupon } from '../../store/reducers/user-slice';
 
 const CartScreen: FC<PageProps> = ({ navigation }) => {
   const [similarProducts, setSimilarProducts] = useState<ProductBO[]>([]);
+  const coupon = useSelector((st: RootState) => st.user.isSelectedCoupon);
+  const dispatch = useDispatch();
+  const selectedCoupon = useMemo(() => {
+    return couponData.find(d => d.id === coupon);
+  }, [coupon]);
 
   useEffect(() => {
     init();
+    dispatch(updateSelectCoupon(undefined));
   }, []);
 
   const init = async () => {
@@ -65,7 +74,9 @@ const CartScreen: FC<PageProps> = ({ navigation }) => {
       >
         <View style={[styles.descriptionContainer, styles.discountContainer]}>
           <Text style={styles.primaryText}>
-            You are saving ₹99 with this order!
+            You are saving ₹
+            {selectedCoupon?.amount ? selectedCoupon?.amount - platformFee : 0}{' '}
+            with this order!
           </Text>
         </View>
         <View style={[styles.descriptionContainer, styles.delayContainer]}>

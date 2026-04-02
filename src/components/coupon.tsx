@@ -21,6 +21,7 @@ const CouponCard = ({
       activeOpacity={0.8}
       onPress={onPress}
       style={styles.container}
+      disabled={!enable}
     >
       <View style={styles.offerWraper}>
         <Text style={styles.offText}>₹{item.amount}</Text>

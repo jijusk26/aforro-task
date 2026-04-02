@@ -5,6 +5,15 @@ export interface PageProps {
   route: any;
 }
 
+export interface OptionsBO {
+  id: number;
+  quantity: number;
+  sizeGuage: 'gm' | 'kg' | 'lr';
+  price: number;
+  actualPrice: number;
+  discount: number;
+}
+
 export interface ProductBO {
   id: number;
   brand: string;
@@ -17,6 +26,7 @@ export interface ProductBO {
   images: ImageSourcePropType[];
   quantity: number;
   sizeGuage: 'gm' | 'kg' | 'lr';
+  options: OptionsBO[];
 }
 
 export interface InstructionsBO {

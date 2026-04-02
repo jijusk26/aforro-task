@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Colors } from '../../../constants/colors';
 import { SvgXml } from 'react-native-svg';
 import { Icons } from '../../../assets/svg/icons';
+import useCart from '../../../hooks/cart';
+import {
+  deliveryFee,
+  deliveryFreeAmount,
+  platformFee,
+} from '../../../constants/appconstants';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import { couponData } from '../../../data/mock-data';
 
 const PayableAmount = () => {
+  const { total, payableAmount } = useCart();
+  const coupon = useSelector((st: RootState) => st.user.isSelectedCoupon);
+
+  const selectedCoupon = useMemo(() => {
+    return couponData.find(d => d.id === coupon);
+  }, [coupon]);
+
   return (
     <View style={styles.descriptionContainer}>
       <View style={{ padding: 12 }}>
         <TextWrapper
-          amount={444}
+          amount={total}
           icon={Icons.money}
           title="Item Total"
           tagText="Saved ₹20"
@@ -18,38 +34,43 @@ const PayableAmount = () => {
         <View style={{ flexDirection: 'row', gap: 5, marginVertical: 7 }}>
           <View style={{ flex: 1 }}>
             <TextWrapper
-              amount={444}
+              amount={deliveryFee}
               icon={Icons.delivery}
               title="Delivery fee"
               style={{ paddingVertical: 0 }}
             />
-            <Text
-              style={{
-                marginLeft: 16,
-                fontSize: 12,
-                fontWeight: '500',
-                color: Colors.primary + '5a',
-              }}
-            >
-              Add items worth ₹20 to get free delivery
-            </Text>
+            {deliveryFreeAmount > total && (
+              <Text
+                style={{
+                  marginLeft: 16,
+                  fontSize: 12,
+                  fontWeight: '500',
+                  color: Colors.primary + '5a',
+                }}
+              >
+                Add items worth ₹{deliveryFreeAmount - total} to get free
+                delivery
+              </Text>
+            )}
           </View>
-          <Text style={{ color: Colors.primary }}>FREE</Text>
+          {deliveryFreeAmount < total && (
+            <Text style={{ color: Colors.primary }}>FREE</Text>
+          )}
         </View>
         <TextWrapper
-          amount={-444}
+          amount={selectedCoupon?.amount ?? 0}
           icon={Icons.money}
           title="Discount"
           style={styles.dashedBorder}
         />
         <TextWrapper
-          amount={-444}
+          amount={platformFee}
           icon={Icons.tag}
           title="Platform Fee"
           style={styles.dashedBorder}
         />
         <TextWrapper
-          amount={-444}
+          amount={payableAmount}
           title="Total payable amount"
           textStyle={{
             fontSize: 14,
@@ -70,7 +91,9 @@ const PayableAmount = () => {
           <Text
             style={{ color: Colors.secondary, fontWeight: '600', fontSize: 12 }}
           >
-            You are saving ₹99 with this order!
+            You are saving ₹
+            {selectedCoupon?.amount ? selectedCoupon?.amount - platformFee : 0}{' '}
+            with this order!
           </Text>
         </View>
       </View>
@@ -107,7 +130,7 @@ const TextWrapper = ({
         )}
       </View>
       <Text style={[styles.nuetralText, textStyle]}>
-        {amount > 0 ? '₹' + amount : '-₹' + amount}
+        {amount > 0 ? '₹' + amount : '-₹' + Math.abs(amount)}
       </Text>
     </View>
   );

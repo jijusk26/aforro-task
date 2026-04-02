@@ -10,11 +10,13 @@ import { localEnabled } from '../../../helpers/location';
 import { SvgXml } from 'react-native-svg';
 import { Icons } from '../../../assets/svg/icons';
 import { AddressBO } from '../../../store/reducers/user-slice';
+import useCart from '../../../hooks/cart';
 
 const Checkout = ({ navigation }: { navigation: any }) => {
   const [localtionEnabled, setLocationEnabled] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user);
   const [address, setAddress] = useState<AddressBO>();
+  const { payableAmount } = useCart();
 
   useEffect(() => {
     init();
@@ -60,7 +62,7 @@ const Checkout = ({ navigation }: { navigation: any }) => {
     );
   }
 
-  if (!localtionEnabled && user.address.length === 0) {
+  if (!localtionEnabled || user.address.length === 0) {
     return (
       <View style={styles.container}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -127,20 +129,13 @@ const Checkout = ({ navigation }: { navigation: any }) => {
           Change
         </Text>
       </View>
-      <View
-        style={{
-          height: 69,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 16,
-        }}
-      >
+      <View style={styles.priceInfo}>
         <View style={{ flex: 1, gap: 3 }}>
           <Text style={{ fontSize: 12, fontWeight: '500', color: '#C0C0C0' }}>
             To Pay
           </Text>
           <Text style={{ fontSize: 16, fontWeight: '800', color: '#1B1C1E' }}>
-            ₹444
+            ₹{payableAmount}
           </Text>
         </View>
         <Button title={'Proceed'} style={{ width: 140 }}></Button>
@@ -160,5 +155,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     backgroundColor: Colors.background,
   },
+  priceInfo: {
+    height: 69,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
+
 export default Checkout;

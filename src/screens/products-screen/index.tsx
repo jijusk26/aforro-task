@@ -1,21 +1,24 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { Colors } from '../../constants/colors';
 import Header from '../../components/header';
 import { width } from '../../constants/appconstants';
 import ProductCard from '../../components/products-card';
-import { ProductBO } from '../../types/product';
+import { PageProps, ProductBO } from '../../types/product';
 import {
   fetchProducts,
   fetchSimilarProducts,
   fetchTopSellingProducts,
 } from '../../services/products';
 import { Icons } from '../../assets/svg/icons';
+import Button from '../../components/button';
+import useCart from '../../hooks/cart';
 
-const ProductDetailPage = () => {
+const ProductDetailPage: FC<PageProps> = ({ navigation }) => {
   const [product, setProduct] = useState<ProductBO>();
   const [similiarProducts, setSimilarProducts] = useState<ProductBO[]>([]);
   const [topSellingProducts, setTopSellingProducts] = useState<ProductBO[]>([]);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     init();
@@ -75,6 +78,18 @@ const ProductDetailPage = () => {
     return item.id.toString();
   }, []);
 
+  const onPressBuy = async () => {
+    try {
+      if (product) {
+        const response = await addToCart(
+          { count: 1, id: product?.id, optionId: product?.options?.[0].id },
+          true,
+        );
+        navigation.navigate('Cart');
+      }
+    } catch (error) {}
+  };
+
   return (
     <View style={styles.container}>
       <Header title={product?.title} secondaryIcon={Icons.share} />
@@ -112,6 +127,29 @@ const ProductDetailPage = () => {
           />
         </View>
       </ScrollView>
+      <View
+        style={{
+          height: 60,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 16,
+          backgroundColor: Colors.background,
+        }}
+      >
+        <View style={{ flex: 1, gap: 3 }}>
+          <Text style={{ fontSize: 12, fontWeight: '500', color: '#C0C0C0' }}>
+            To Pay
+          </Text>
+          <Text style={{ fontSize: 16, fontWeight: '800', color: '#1B1C1E' }}>
+            ₹{product?.offerPrice}
+          </Text>
+        </View>
+        <Button
+          title={'Buy'}
+          style={{ width: 140 }}
+          onPress={onPressBuy}
+        ></Button>
+      </View>
     </View>
   );
 };

@@ -4,6 +4,10 @@ import { InstructionsBO } from '../types/product';
 
 export const { width, height } = Dimensions.get('screen');
 
+export const deliveryFreeAmount = 500;
+export const deliveryFee = 60;
+export const platformFee = 40;
+
 export const deliveryInstructions: InstructionsBO[] = [
   {
     id: 1234,

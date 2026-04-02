@@ -16,16 +16,27 @@ export interface AddressBO {
   pinCode: string | number;
 }
 
+export interface CardItemBO {
+  id: number;
+  count: number;
+  optionId: number;
+}
+
 export interface AuthState {
   user: UserInfo | null;
   isAuthenticated: boolean;
   address: AddressBO[];
+  cart: CardItemBO[];
+  isFirstTime: boolean;
+  isSelectedCoupon?: number;
 }
 
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
   address: [],
+  cart: [],
+  isFirstTime: true,
 };
 
 const userSlice = createSlice({
@@ -53,14 +64,30 @@ const userSlice = createSlice({
         state.address = filtered.concat(action.payload);
       }
     },
+    updateCart(state, action: PayloadAction<CardItemBO[]>) {
+      state.cart = action.payload;
+    },
+    updateUserVisitApp(state, action: PayloadAction<boolean>) {
+      state.isFirstTime = action.payload;
+    },
+    updateSelectCoupon(state, action: PayloadAction<number | undefined>) {
+      state.isSelectedCoupon = action.payload;
+    },
   },
 });
 
 const persistConfig = {
   key: 'user',
   storage: AsyncStorage,
-  whitelist: ['user', 'isAuthenticated', 'address'],
+  whitelist: ['user', 'isAuthenticated', 'address', 'cart', 'isFirstTime'],
 };
 
-export const { logout, updateUser, addAddress } = userSlice.actions;
+export const {
+  logout,
+  updateUser,
+  addAddress,
+  updateCart,
+  updateUserVisitApp,
+  updateSelectCoupon,
+} = userSlice.actions;
 export default persistReducer<AuthState>(persistConfig, userSlice.reducer);

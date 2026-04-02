@@ -1,10 +1,21 @@
-import React from 'react';
-import { StyleSheet, Text, View, ViewStyle, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+  Image,
+  Modal,
+  Pressable,
+} from 'react-native';
 import { Colors } from '../constants/colors';
 import { SvgXml } from 'react-native-svg';
 import { Icons } from '../assets/svg/icons';
 import Button from './button';
-import { ProductBO } from '../types/product';
+import { OptionsBO, ProductBO } from '../types/product';
+import { width } from '../constants/appconstants';
+import OptionsList from './options-list';
+import useCart from '../hooks/cart';
 
 const ProductCard = ({
   style,
@@ -15,119 +26,189 @@ const ProductCard = ({
   isSmall?: boolean;
   product: ProductBO;
 }) => {
+  const [viewOptions, setViewOptions] = useState<boolean>(false);
+  const [option, setOption] = useState<OptionsBO>(product.options?.[0]);
+  const { addToCart } = useCart();
+
+  useEffect(() => {
+    setOption(product.options?.[0]);
+  }, [product]);
+
   return (
-    <View
-      style={[
-        !isSmall ? styles.container : styles.smallContainer,
-        style,
-        { position: 'relative' },
-      ]}
-    >
-      {!isSmall ? (
-        <View style={{ height: 250 }}></View>
-      ) : (
-        <View style={{ height: 104, width: 104 }}>
-          <Image
-            source={product.thumbnail}
-            style={{ height: '100%', width: '100%' }}
-            resizeMode="contain"
+    <>
+      <View
+        style={[
+          !isSmall ? styles.container : styles.smallContainer,
+          style,
+          { position: 'relative' },
+        ]}
+      >
+        {!isSmall ? (
+          <View style={{ height: 250 }}></View>
+        ) : (
+          <View style={{ height: 104, width: 104 }}>
+            <Image
+              source={product.thumbnail}
+              style={{ height: '100%', width: '100%' }}
+              resizeMode="contain"
+            />
+          </View>
+        )}
+        <View
+          style={{
+            width: isSmall ? 20 : 40,
+            position: 'absolute',
+            top: isSmall ? 5 : 12,
+            left: isSmall ? 5 : 12,
+          }}
+        >
+          <View
+            style={[
+              styles.badgeContainer,
+              {
+                width: isSmall ? 25 : 40,
+                height: isSmall ? 25 : 40,
+                borderTopLeftRadius: isSmall ? 10 : 12,
+                gap: isSmall ? 0 : 2,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.badgeText,
+                {
+                  fontSize: isSmall ? 6 : 12,
+                },
+              ]}
+            >
+              {option.discount}%
+            </Text>
+            <Text
+              style={[
+                styles.badgeText,
+                {
+                  fontSize: isSmall ? 6 : 12,
+                },
+              ]}
+            >
+              OFF
+            </Text>
+          </View>
+          <SvgXml
+            xml={
+              isSmall
+                ? Icons.badge.replace('41', '25').replace('7', '4')
+                : Icons.badge
+            }
+            fontSize={isSmall ? 24 : 40}
+            style={{ width: isSmall ? 24 : 40 }}
           />
         </View>
-      )}
-      <View
-        style={{
-          width: isSmall ? 20 : 40,
-          position: 'absolute',
-          top: isSmall ? 5 : 12,
-          left: isSmall ? 5 : 12,
-        }}
-      >
-        <View
-          style={[
-            styles.badgeContainer,
-            {
-              width: isSmall ? 25 : 40,
-              height: isSmall ? 25 : 40,
-              borderTopLeftRadius: isSmall ? 10 : 12,
-              gap: isSmall ? 0 : 2,
-            },
-          ]}
-        >
+        <View style={{ gap: 4 }}>
+          <Text style={styles.secondaryText}>{product.brand}</Text>
           <Text
+            style={styles.primaryText}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {product.title}
+          </Text>
+          <View
             style={[
-              styles.badgeText,
-              {
-                fontSize: isSmall ? 6 : 12,
-              },
+              styles.priceContainer,
+              { flexDirection: isSmall ? 'column' : 'row' },
+              isSmall && { gap: 8 },
             ]}
           >
-            50%
-          </Text>
-          <Text
-            style={[
-              styles.badgeText,
-              {
-                fontSize: isSmall ? 6 : 12,
-              },
-            ]}
-          >
-            OFF
-          </Text>
-        </View>
-        <SvgXml
-          xml={
-            isSmall
-              ? Icons.badge.replace('41', '25').replace('7', '4')
-              : Icons.badge
-          }
-          fontSize={isSmall ? 24 : 40}
-          style={{ width: isSmall ? 24 : 40 }}
-        />
-      </View>
-      <View style={{ gap: 4 }}>
-        <Text style={styles.secondaryText}>{product.brand}</Text>
-        <Text style={styles.primaryText} numberOfLines={2} ellipsizeMode="tail">
-          {product.title}
-        </Text>
-        <View
-          style={[
-            styles.priceContainer,
-            { flexDirection: isSmall ? 'column' : 'row' },
-            isSmall && { gap: 8 },
-          ]}
-        >
-          <View style={[!isSmall && { flex: 1 }]}>
-            <Text style={[styles.secondaryText, { fontWeight: '400' }]}>
-              {product.weight} g
-            </Text>
-            <View style={{ flexDirection: 'row', gap: 5 }}>
-              <Text style={{ color: Colors.primaryText }}>
-                ₹{product.offerPrice}
+            <View style={[!isSmall && { flex: 1 }]}>
+              <Text style={[styles.secondaryText, { fontWeight: '400' }]}>
+                {option.quantity + ' ' + option.sizeGuage}
               </Text>
-              <Text style={{ color: Colors.secondaryText }}>
-                ₹{product.actualPrice}
-              </Text>
+              <View style={{ flexDirection: 'row', gap: 5 }}>
+                <Text style={{ color: Colors.primaryText }}>
+                  ₹{option.price}
+                </Text>
+                <Text style={{ color: Colors.secondaryText }}>
+                  ₹{option.actualPrice}
+                </Text>
+              </View>
             </View>
+            <Button
+              title={
+                product.options.length > 1
+                  ? product.options.length + ' options'
+                  : 'Add'
+              }
+              style={{
+                width: isSmall ? 100 : 120,
+                gap: 3,
+                height: isSmall ? 30 : 36,
+              }}
+              onPress={() => {
+                if (product.options.length > 1) {
+                  setViewOptions(true);
+                } else {
+                  addToCart(
+                    { count: 1, id: product.id, optionId: option.id },
+                    true,
+                  );
+                }
+              }}
+            >
+              {product.options.length > 1 && (
+                <SvgXml
+                  xml={Icons.leftArrow.replace('#000000', Colors.background)}
+                  fontSize={7}
+                  style={{
+                    transform: [
+                      { rotate: '270deg' },
+                      { scale: isSmall ? 0.7 : 1 },
+                    ],
+                  }}
+                />
+              )}
+            </Button>
           </View>
-          <Button
-            title={'2 options'}
+        </View>
+      </View>
+      <Modal statusBarTranslucent transparent visible={viewOptions}>
+        <Pressable
+          style={{
+            flex: 1,
+            backgroundColor: '#0000005a',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Pressable
+            style={{ flex: 1 }}
+            onPress={() => setViewOptions(false)}
+          />
+          <View
             style={{
-              width: isSmall ? 100 : 120,
-              gap: 3,
-              height: isSmall ? 30 : 36,
+              backgroundColor: Colors.background,
+              padding: 16,
+              borderRadius: 16,
+              gap: 12,
             }}
           >
-            <SvgXml
-              xml={Icons.leftArrow.replace('#000000', Colors.background)}
-              fontSize={7}
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="tail"
               style={{
-                transform: [{ rotate: '270deg' }, { scale: isSmall ? 0.7 : 1 }],
+                fontSize: 14,
+                color: Colors.primaryText,
+                fontWeight: '600',
+                width: '70%',
               }}
-            />
-          </Button>
-        </View>
-      </View>
-    </View>
+            >
+              {product.title}
+            </Text>
+            <OptionsList product={product} />
+            <Button title="Confirm" style={{ width: width - 32, height: 40 }} />
+          </View>
+        </Pressable>
+      </Modal>
+    </>
   );
 };
 
