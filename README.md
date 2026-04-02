@@ -1,14 +1,96 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Aforro - Mobile App
 
-# Getting Started
+A React Native mobile application for managing savings and discounts. Built with TypeScript, Redux Toolkit, and React Navigation.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Tech Stack
 
-## Step 1: Start Metro
+- **React Native**
+- **TypeScript**
+- **Redux Toolkit**
+- **React Navigation**
+- **React Native Reanimated**
+- **React Native SVG**
+- **Async Storage**
+- **Redux Persist**
+- **React Native Permissions**
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Project Structure
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+```
+aforro/
+├── android/                    # Android native code and build configuration
+│   └── app/                    # Android app module
+├── ios/                        # iOS native code and build configuration
+│   └── aforro/                 # iOS app folder
+├── src/                        # Source code (TypeScript/React)
+│   ├── assets/                 # Static assets
+│   │   ├── images/             # Image files and exports
+│   │   └── svg/                # SVG icons and graphics
+│   ├── components/             # Reusable React components
+│   │   ├── button.tsx
+│   │   ├── coupon.tsx
+│   │   ├── header.tsx
+│   │   ├── loader.tsx
+│   │   ├── options-list.tsx
+│   │   └── products-card.tsx
+│   ├── constants/              # App constants and configuration
+│   │   ├── appconstants.ts
+│   │   └── colors.ts
+│   ├── data/                   # Mock data
+│   │   └── mock-data.ts
+│   ├── helpers/                # Utility helper functions
+│   │   └── location.ts
+│   ├── hooks/                  # Custom React hooks
+│   │   └── cart.ts
+│   ├── navigation/             # Navigation configuration
+│   │   └── root-navigation.tsx
+│   ├── screens/                # Screen components (pages)
+│   │   ├── add-address/        # Add address screen
+│   │   ├── cart-screen/        # Shopping cart screen
+│   │   ├── login-screen/       # Login/authentication screen
+│   │   ├── products-screen/    # Products listing screen
+│   │   └── splash-screen/      # Splash/intro screen
+│   ├── services/               # API and external services
+│   │   └── products.ts
+│   ├── store/                  # Redux store setup
+│   │   ├── store.ts            # Store configuration
+│   │   └── reducers/           # Redux slices and reducers
+│   │       └── user-slice.ts
+│   └── types/                  # TypeScript type definitions
+│       └── product.ts
+├── App.tsx                     # Root application component
+├── app.json                    # App configuration
+├── index.js                    # Entry point
+
+```
+
+## Getting Started
+
+### 1. Install Dependencies
+
+```bash
+# Install npm dependencies
+npm install
+
+# OR using Yarn
+yarn install
+```
+
+### 2. Setup iOS (macOS only)
+
+```bash
+# Install Ruby dependencies
+bundle install
+
+# Navigate to iOS folder and install CocoaPods
+cd ios
+bundle exec pod install
+cd ..
+```
+
+### 3. Start Metro Development Server
+
+Metro is the JavaScript build tool for React Native. Run it in a dedicated terminal:
 
 ```sh
 # Using npm
@@ -72,6 +154,13 @@ When you want to forcefully reload, for example to reset the state of your app, 
 
 - **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
 - **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+
+# Step 4: Can able to view changes by doing this
+
+- Disable location permission and enter to the application
+- Add address is availble is the address is no added
+- Move to cart page without login
+- Should be login to make order
 
 ## Congratulations! :tada:
 

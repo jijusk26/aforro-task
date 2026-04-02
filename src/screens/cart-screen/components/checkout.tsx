@@ -12,11 +12,16 @@ import { Icons } from '../../../assets/svg/icons';
 import { AddressBO } from '../../../store/reducers/user-slice';
 import useCart from '../../../hooks/cart';
 
+const getRandom = () => {
+  return [1, 2][Math.floor(Math.random() * [1, 2].length)];
+};
+
 const Checkout = ({ navigation }: { navigation: any }) => {
   const [localtionEnabled, setLocationEnabled] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user);
   const [address, setAddress] = useState<AddressBO>();
   const { payableAmount } = useCart();
+  const [isSlot, setIsSlot] = useState(getRandom() === 1);
 
   useEffect(() => {
     init();
@@ -98,7 +103,7 @@ const Checkout = ({ navigation }: { navigation: any }) => {
               fontWeight: '400',
             }}
           >
-            Deliver To{' '}
+            {isSlot ? 'Deliver In ' : 'Deliver To'}
             <Text
               style={{
                 fontSize: 12,
@@ -106,7 +111,7 @@ const Checkout = ({ navigation }: { navigation: any }) => {
                 fontWeight: '600',
               }}
             >
-              {address?.type}
+              {!isSlot ? address?.type : '30-60 mins⚡'}
             </Text>
           </Text>
           <Text
@@ -114,7 +119,9 @@ const Checkout = ({ navigation }: { navigation: any }) => {
               fontSize: 12,
               color: Colors.border,
               fontWeight: '500',
+              width: '80%',
             }}
+            numberOfLines={1}
           >
             {address?.address + ', ' + address?.city + ', ' + address?.pinCode}
           </Text>
